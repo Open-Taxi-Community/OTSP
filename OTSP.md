@@ -3,12 +3,13 @@
 ## Table of Contents
 
 1. [OpenTaxi Overview](#opentaxi-overview)
-2. [User Application](#user-application)
-3. [Driver Server](#driver-server)
-4. [Decentralized Application](#decentralized-application)
-5. [Driver Application](#driver-application)
-6. [Legal Requirements](#legal-requirements)
-7. [Business Requirements](#business-requirements)
+2. [Routing and DNS](#routing-and-dns)
+3. [User Application](#user-application)
+4. [Driver Server](#driver-server)
+5. [Decentralized Application](#decentralized-application)
+6. [Driver Application](#driver-application)
+7. [Legal Requirements](#legal-requirements)
+8. [Business Requirements](#business-requirements)
 
 ---
 
@@ -39,7 +40,28 @@ flowchart TD
 - Payment is then handled through traditional server/client payment processors
 ---
 
-## 2. User Application
+## 2. Routing And DNS
+```mermaid
+flowchart TD
+    GoogleDNS((Google Cloud DNS)) <--> |Add/Remove IP| ComplianceAPI((Compliance API));
+    ComplianceAPI --> |Health Test Requests| DriverServer((Driver Server))
+    DriverServer((Driver Server)) --> |Health Test Responses| ComplianceAPI
+    DriverServer((Driver Server)) --> |Add Request| ComplianceAPI
+```
+### Purpose
+In order to facilitate passenger and blockchain communication, a centralized DNS will be required to route
+passengers to a blockchain node that every driver will have on their server.
+
+### Compliance API
+The compliance API will be a cloud run server that takes in a request from a driver server that wishes to be 
+added to the OpenTaxi DNS.  The Compliance API will then run through a list of test requests to the drivers
+API to ensure that everything is in compliance with the OpenTaxi standard.  Once the test has passed, the driver server's
+Domain URL will be added.
+
+### Compliance Tests TBD
+TODO, add the list of required tests
+
+## 3. User Application
 ### User Authentication and Onboarding
 - Integration with Google OAuth for user authentication
 - User registration via Google account
@@ -59,7 +81,7 @@ flowchart TD
 
 ---
 
-## 3. Driver Server
+## 4. Driver Server
 ```mermaid
 flowchart TD
     DriverApp((Driver App)) --> |Controls CICD| DeploymentApi((Deployment API));
@@ -98,7 +120,7 @@ continuously process blockchain results to look for potential rides.
 
 ---
 
-## 4. Decentralized Application 
+## 5. Decentralized Application 
 ### Purpose
 To facilitate connecting customers and drivers without needing a centralized server.
 
@@ -112,7 +134,7 @@ To facilitate connecting customers and drivers without needing a centralized ser
 
 ---
 
-## 5. Driver Application
+## 6. Driver Application
 ### Purpose
 A mobile application that handles setting up servers, legal requirement walk through, business formation requirements.  
 The application serves as a helper to streamline the process of founding a sole proprietor taxi company that behaves like a ride-share app.
@@ -134,10 +156,10 @@ The application serves as a helper to streamline the process of founding a sole 
 
 ---
 
-## 6. Legal Requirements
+## 7. Legal Requirements
 TBD. This will be fairly complex and will have to slowly roll out to locations that have friendly laws.  Documents will need to be captured and uploaded to the driver's server.
 
 ---
 
-## 7. Business Requirements
+## 8. Business Requirements
 Just like the legal requirements, location specific guidance will be needed for setting up a business entity and the required insurance. Documents will need to be captured and uploaded to the driver's server.
